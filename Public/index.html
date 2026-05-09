@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="ro">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yahoo! Messenger</title>
   <link rel="stylesheet" href="css/login.css">
 </head>
+
 <body>
   <div id="app" v-cloak>
-    <!-- Background bubbles -->
     <div class="bg-bubbles">
       <span v-for="i in 10" :key="i"></span>
     </div>
-
     <div class="login-wrapper">
-      <!-- Logo -->
       <div class="logo-area">
         <div class="yahoo-logo">
           <span class="y">Y!</span>
@@ -22,44 +21,28 @@
         </div>
         <p class="tagline">Conectează-te cu prietenii tăi</p>
       </div>
-
-      <!-- Form Card -->
       <div class="form-card">
-        <!-- Tabs -->
         <div class="tabs">
-          <button :class="['tab', { active: mode === 'login' }]" @click="mode = 'login'; clearError()">
-            Autentificare
-          </button>
-          <button :class="['tab', { active: mode === 'register' }]" @click="mode = 'register'; clearError()">
-            Cont nou
-          </button>
+          <button :class="['tab', { active: mode === 'login' }]"
+            @click="mode = 'login'; clearError()">Autentificare</button>
+          <button :class="['tab', { active: mode === 'register' }]" @click="mode = 'register'; clearError()">Cont
+            nou</button>
         </div>
-
-        <!-- Error Message -->
-        <div class="error-msg" v-if="error">
-          <span>⚠️ {{ error }}</span>
-        </div>
-
-        <!-- Success Message -->
-        <div class="success-msg" v-if="success">
-          <span>✅ {{ success }}</span>
-        </div>
-
-        <!-- LOGIN FORM -->
+        <div class="error-msg" v-if="error"><span>⚠️ {{ error }}</span></div>
+        <div class="success-msg" v-if="success"><span>✅ {{ success }}</span></div>
         <div v-if="mode === 'login'" class="form-section">
           <div class="field">
             <label>Yahoo! ID sau Email</label>
-            <input type="text" v-model="loginForm.username" placeholder="id-ul tău yahoo"
-              @keyup.enter="doLogin" :disabled="loading" autocomplete="username">
+            <input type="text" v-model="loginForm.username" placeholder="id-ul tău yahoo" @keyup.enter="doLogin"
+              :disabled="loading">
           </div>
           <div class="field">
             <label>Parolă</label>
             <div class="password-wrap">
-              <input :type="showPassword ? 'text' : 'password'" v-model="loginForm.password"
-                placeholder="••••••••" @keyup.enter="doLogin" :disabled="loading" autocomplete="current-password">
-              <button class="toggle-pass" @click="showPassword = !showPassword">
-                {{ showPassword ? '🙈' : '👁️' }}
-              </button>
+              <input :type="showPassword ? 'text' : 'password'" v-model="loginForm.password" placeholder="••••••••"
+                @keyup.enter="doLogin" :disabled="loading">
+              <button class="toggle-pass" @click="showPassword = !showPassword">{{ showPassword ? '🙈' : '👁️'
+                }}</button>
             </div>
           </div>
           <div class="remember-row">
@@ -70,40 +53,29 @@
           </div>
           <button class="btn-primary" @click="doLogin" :disabled="loading">
             <span v-if="!loading">🔑 Autentificare</span>
-            <span v-else class="spinner">⏳ Se conectează...</span>
+            <span v-else>⏳ Se conectează...</span>
           </button>
         </div>
-
-        <!-- REGISTER FORM -->
         <div v-if="mode === 'register'" class="form-section">
           <div class="field">
             <label>Yahoo! ID (username)</label>
-            <input type="text" v-model="registerForm.username" placeholder="alege un id unic"
-              :disabled="loading" autocomplete="username">
-            <span class="field-hint">Minim 3 caractere, fără spații</span>
+            <input type="text" v-model="registerForm.username" placeholder="alege un id unic" :disabled="loading">
           </div>
           <div class="field">
             <label>Nume afișat</label>
-            <input type="text" v-model="registerForm.displayName" placeholder="cum vrei să apari"
-              :disabled="loading">
+            <input type="text" v-model="registerForm.displayName" placeholder="cum vrei să apari" :disabled="loading">
           </div>
           <div class="field">
             <label>Email</label>
-            <input type="email" v-model="registerForm.email" placeholder="email@exemplu.com"
-              :disabled="loading" autocomplete="email">
+            <input type="email" v-model="registerForm.email" placeholder="email@exemplu.com" :disabled="loading">
           </div>
           <div class="field">
             <label>Parolă</label>
             <div class="password-wrap">
               <input :type="showPassword ? 'text' : 'password'" v-model="registerForm.password"
                 placeholder="minim 6 caractere" :disabled="loading">
-              <button class="toggle-pass" @click="showPassword = !showPassword">
-                {{ showPassword ? '🙈' : '👁️' }}
-              </button>
-            </div>
-            <div class="password-strength" v-if="registerForm.password">
-              <div class="strength-bar" :class="passwordStrengthClass"></div>
-              <span>{{ passwordStrengthText }}</span>
+              <button class="toggle-pass" @click="showPassword = !showPassword">{{ showPassword ? '🙈' : '👁️'
+                }}</button>
             </div>
           </div>
           <button class="btn-primary" @click="doRegister" :disabled="loading">
@@ -111,119 +83,60 @@
             <span v-else>⏳ Se procesează...</span>
           </button>
         </div>
-
         <div class="form-footer">
           <span v-if="mode === 'login'">Nu ai cont? <a @click="mode = 'register'">Înregistrează-te!</a></span>
           <span v-else>Ai deja cont? <a @click="mode = 'login'">Autentifică-te!</a></span>
         </div>
       </div>
-
-      <div class="version-tag">Yahoo! Messenger Clone v1.0 — Făcut cu ❤️</div>
     </div>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script>
     const { createApp } = Vue;
-
     createApp({
       data() {
         return {
-          mode: 'register',
-          loading: false,
-          error: '',
-          success: '',
-          showPassword: false,
+          mode: 'login', loading: false, error: '', success: '', showPassword: false,
           loginForm: { username: '', password: '', remember: false },
           registerForm: { username: '', displayName: '', email: '', password: '' }
         };
       },
-      computed: {
-        passwordStrength() {
-          const p = this.registerForm.password;
-          if (p.length < 6) return 1;
-          if (p.length < 10 || !/[A-Z]/.test(p) || !/[0-9]/.test(p)) return 2;
-          return 3;
-        },
-        passwordStrengthClass() {
-          return ['weak', 'medium', 'strong'][this.passwordStrength - 1];
-        },
-        passwordStrengthText() {
-          return ['Slabă', 'Medie', 'Puternică'][this.passwordStrength - 1];
-        }
-      },
       methods: {
-        clearError() {
-          this.error = '';
-          this.success = '';
-        },
+        clearError() { this.error = ''; this.success = ''; },
         async doLogin() {
-          if (!this.loginForm.username || !this.loginForm.password) {
-            this.error = 'Completează toate câmpurile';
-            return;
-          }
+          if (!this.loginForm.username || !this.loginForm.password) { this.error = 'Completează toate câmpurile'; return; }
           this.loading = true;
-          this.error = '';
-
+          if (this.loginForm.remember) { localStorage.setItem('yahoo_saved_username', this.loginForm.username); }
+          else { localStorage.removeItem('yahoo_saved_username'); }
           try {
             const response = await $.ajax({
-              url: '/api/auth/login',
-              method: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify({
-                username: this.loginForm.username,
-                password: this.loginForm.password
-              }),
-              xhrFields: { withCredentials: true }
+              url: '/api/auth/login', method: 'POST', contentType: 'application/json',
+              data: JSON.stringify({ username: this.loginForm.username, password: this.loginForm.password, remember: this.loginForm.remember })
             });
-
-            if (response.success) {
-              this.success = `Bun venit, ${response.user.displayName}! Se încarcă...`;
-              setTimeout(() => window.location.href = '/chat', 800);
-            }
-          } catch (err) {
-            this.error = err.responseJSON?.error || 'Eroare de conectare';
-          } finally {
-            this.loading = false;
-          }
+            if (response.success) { window.location.href = '/chat'; }
+          } catch (err) { this.error = err.responseJSON?.error || 'Eroare de conectare'; }
+          finally { this.loading = false; }
         },
         async doRegister() {
-          const { username, displayName, email, password } = this.registerForm;
-          if (!username || !displayName || !email || !password) {
-            this.error = 'Completează toate câmpurile';
-            return;
-          }
           this.loading = true;
-          this.error = '';
-
           try {
             const response = await $.ajax({
-              url: '/api/auth/register',
-              method: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify({ username, displayName, email, password }),
-              xhrFields: { withCredentials: true }
+              url: '/api/auth/register', method: 'POST', contentType: 'application/json',
+              data: JSON.stringify(this.registerForm)
             });
-
-            if (response.success) {
-              this.success = `Cont creat! Bun venit, ${response.user.displayName}!`;
-              setTimeout(() => window.location.href = '/chat', 800);
-            }
-          } catch (err) {
-            this.error = err.responseJSON?.error || 'Eroare la înregistrare';
-          } finally {
-            this.loading = false;
-          }
+            if (response.success) { window.location.href = '/chat'; }
+          } catch (err) { this.error = err.responseJSON?.error || 'Eroare la înregistrare'; }
+          finally { this.loading = false; }
         }
       },
       mounted() {
-        // Check if already logged in
-        $.get('/api/auth/me').done(() => {
-          window.location.href = '/chat';
-        });
+        const savedUsername = localStorage.getItem('yahoo_saved_username');
+        if (savedUsername) { this.loginForm.username = savedUsername; this.loginForm.remember = true; }
+        $.get('/api/auth/me').done(() => { window.location.href = '/chat'; });
       }
     }).mount('#app');
   </script>
 </body>
+
 </html>

@@ -1,0 +1,36 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "dan",
+      "email": "dan@gmail.com",
+      "password": "$2a$10$kuonRVddl2rIhtDzt8/la.7HswWqmCtyZYopacKqMks4UdG9ovxKG",
+      "display_name": "dan",
+      "avatar": "default",
+      "status": "offline",
+      "status_message": "Hello!",
+      "created_at": "2026-05-09T16:07:08.429Z"
+    },
+    {
+      "id": 2,
+      "username": "luci",
+      "email": "luci@gmail.com",
+      "password": "$2a$10$B7fRHysrkLmhg1sX2W45WuLYwzhvtAzXMHiVvZPI7kpHO124eEYvK",
+      "display_name": "luci",
+      "avatar": "default",
+      "status": "offline",
+      "status_message": "Hello!",
+      "created_at": "2026-05-09T16:08:12.463Z"
+    }
+  ],
+  "contacts": [],
+  "messages": [],
+  "chat_rooms": [
+    {
+      "id": 1,
+      "name": "Romania General"
+    }
+  ],
+  "room_messages": [],
+  "room_members": []
+}
