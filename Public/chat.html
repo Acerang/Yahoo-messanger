@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yahoo! Messenger</title>
+  <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+  <div id="app" v-cloak>
+
+    <!-- ═══════════ SIDEBAR ═══════════ -->
+    <aside class="sidebar">
+      <!-- My Profile -->
+      <div class="my-profile">
+        <div class="my-avatar" @click="showProfileModal = true">
+          <div class="avatar-icon" :class="'avatar-' + (currentUser.avatar || 'default')">
+            {{ getAvatarEmoji(currentUser.avatar) }}
+          </div>
+          <div class="status-dot" :class="currentUser.status"></div>
+        </div>
+        <div class="my-info">
+          <div class="my-name" @click="showProfileModal = true">{{ currentUser.displayName }}</div>
+          <div class="my-status-msg">{{ currentUser.statusMessage || 'Click pentru a edita...' }}</div>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn" @click="showAddContact = !showAddContact" title="Adaugă contact">➕</button>
+          <button class="icon-btn" @click="doLogout" title="Deconectare">🚪</button>
+        </div>
+      </div>
+
+      <!-- Status Selector -->
+      <div class="status-bar">
+        <select v-model="currentUser.status" @change="changeStatus" class="status-select">
+          <option value="online">🟢 Online</option>
+          <option value="away">🟡 Plecat</option>
+          <option value="busy">🔴 Ocupat</option>
+          <option value="offline">⚫ Invizibil</option>
+        </select>
+      </div>
+
+      <!-- Add Contact Panel -->
+      <div class="add-contact-panel" v-if="showAddContact">
+        <div class="search-row">
+          <input type="text" v-model="searchQuery" placeholder="Caută username..."
+            @input="searchUsers" @keyup.enter="searchUsers">
+          <button @click="showAddContact = false">✕</button>
+        </div>
+        <div class="search-results">
+          <div class="search-result" v-for="u in searchResults" :key="u.id" @click="addContact(u)">
+            <span class="sr-avatar">{{ getAvatarEmoji(u.avatar) }}</span>
+            <span class="sr-name">{{ u.display_name }}</span>
+            <span class="sr-username">@{{ u.username }}</span>
+            <button class="btn-add-small">+</button>
+          </div>
+          <div class="no-results" v-if="searchQuery.length >= 2 && searchResults.length === 0">
+            Niciun rezultat
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs: Contacts / Rooms -->
+      <div class="sidebar-tabs">
+        <button :class="['stab', { active: sidebarTab === 'contacts' }]" @click="sidebarTab = 'contacts'">
+          👥 Contacte
+        </button>
+        <button :class="['stab', { active: sidebarTab === 'rooms' }]" @click="sidebarTab = 'rooms'; loadRooms()">
+          💬 Camere
+        </button>
+      </div>
+
+      <!-- CONTACTS LIST -->
+      <div class="contacts-list" v-if="sidebarTab === 'contacts'">
+        <div v-if="contacts.length === 0" class="empty-list">
+          <p>Lista ta de contacte este goală.</p>
+          <p>Adaugă contacte cu butonul ➕</p>
+        </div>
+
+        <!-- Online contacts -->
+        <div class="contact-group" v-if="onlineContacts.length > 0">
+          <div class="group-header" @click="toggleGroup('online')">
+            <span class="group-arrow" :class="{ collapsed: collapsedGroups.online }">▼</span>
+            Online ({{ onlineContacts.length }})
+          </div>
+          <div class="group-items" v-if="!collapsedGroups.online">
+            <div
+              v-for="contact in onlineContacts"
+              :key="contact.id"
+              class="contact-item"
+              :class="{ active: activeChat && activeChat.id === contact.id }"
+              @click="openChat(contact)"
+              @contextmenu.prevent="showContactMenu($event, contact)"
+            >
+              <div class="contact-avatar">
+                <span>{{ getAvatarEmoji(contact.avatar) }}</span>
+                <div class="status-dot" :class="contact.status"></div>
+              </div>
+              <div class="contact-info">
+                <div class="contact-name">
+                  {{ contact.display_name }}
+                  <span class="unread-badge" v-if="unreadCounts[contact.id]">
+                    {{ unreadCounts[contact.id] }}
+                  </span>
+                </div>
+                <div class="contact-status-msg">{{ contact.status_message || contact.status }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Offline contacts -->
+        <div class="contact-group" v-if="offlineContacts.length > 0">
+          <div class="group-header" @click="toggleGroup('offline')">
+            <span class="group-arrow" :class="{ collapsed: collapsedGroups.offline }">▼</span>
+            Offline ({{ offlineContacts.length }})
+          </div>
+          <div class="group-items" v-if="!collapsedGroups.offline">
+            <div
+              v-for="contact in offlineContacts"
+              :key="contact.id"
+              class="contact-item offline"
+              :class="{ active: activeChat && activeChat.id === contact.id }"
+              @click="openChat(contact)"
+            >
+              <div class="contact-avatar">
+                <span>{{ getAvatarEmoji(contact.avatar) }}</span>
+                <div class="status-dot offline"></div>
+              </div>
+              <div class="contact-info">
+                <div class="contact-name">{{ contact.display_name }}</div>
+                <div class="contact-status-msg">Offline</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROOMS LIST -->
+      <div class="contacts-list" v-if="sidebarTab === 'rooms'">
+        <div
+          v-for="room in rooms"
+          :key="room.id"
+          class="contact-item"
+          :class="{ active: activeRoom && activeRoom.id === room.id }"
+          @click="openRoom(room)"
+        >
+          <div class="contact-avatar">
+            <span>💬</span>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">{{ room.name }}</div>
+            <div class="contact-status-msg">{{ room.member_count }} membri</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═══════════ CHAT AREA ═══════════ -->
+    <main class="chat-area">
+
+      <!-- Welcome Screen -->
+      <div class="welcome-screen" v-if="!activeChat && !activeRoom">
+        <div class="welcome-logo">Y!</div>
+        <h2>Yahoo! Messenger</h2>
+        <p>Selectează un contact sau o cameră de chat pentru a începe conversația</p>
+        <div class="welcome-tips">
+          <div class="tip">💡 Apasă dublu click pe un contact pentru a trimite un mesaj</div>
+          <div class="tip">🎭 Schimbă-ți statusul din bara din stânga</div>
+          <div class="tip">➕ Adaugă contacte noi căutând username-ul lor</div>
+        </div>
+      </div>
+
+      <!-- Private Chat Window -->
+      <div class="chat-window" v-if="activeChat">
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="chat-header-user">
+            <div class="chat-header-avatar">
+              {{ getAvatarEmoji(activeChat.avatar) }}
+              <div class="status-dot" :class="activeChat.status"></div>
+            </div>
+            <div>
+              <div class="chat-header-name">{{ activeChat.display_name }}</div>
+              <div class="chat-header-status">
+                <span :class="'status-text-' + activeChat.status">
+                  {{ statusLabel(activeChat.status) }}
+                </span>
+                <span v-if="typingUsers[activeChat.id]" class="typing-indicator"> — scrie...</span>
+              </div>
+            </div>
+          </div>
+          <div class="chat-header-actions">
+            <button class="icon-btn" @click="activeChat = null" title="Închide">✕</button>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="messages-container" ref="messagesContainer">
+          <div class="messages-inner">
+            <div class="load-more" v-if="canLoadMore" @click="loadMoreMessages">
+              Încarcă mesaje mai vechi...
+            </div>
+            <div
+              v-for="msg in activeMessages"
+              :key="msg.id"
+              :class="['message', msg.sender_id === currentUser.id ? 'mine' : 'theirs']"
+            >
+              <div class="msg-avatar" v-if="msg.sender_id !== currentUser.id">
+                {{ getAvatarEmoji(activeChat.avatar) }}
+              </div>
+              <div class="msg-bubble-wrap">
+                <div class="msg-bubble">
+                  <span class="msg-text" v-html="formatMessage(msg.content)"></span>
+                </div>
+                <div class="msg-time">{{ formatTime(msg.created_at) }}</div>
+              </div>
+            </div>
+            <div class="typing-bubble" v-if="typingUsers[activeChat.id]">
+              <span>{{ activeChat.display_name }} scrie</span>
+              <span class="dots"><span>.</span><span>.</span><span>.</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+          <div class="input-toolbar">
+            <button class="emoji-btn" @click="toggleEmojiPicker" title="Emoticoane">😊</button>
+            <span class="toolbar-sep">|</span>
+            <button class="format-btn" @click="insertText('bold')" title="Bold"><b>B</b></button>
+            <button class="format-btn" @click="insertText('italic')" title="Italic"><i>I</i></button>
+          </div>
+          <div class="emoji-picker" v-if="showEmojiPicker">
+            <span v-for="e in emojis" :key="e" @click="insertEmoji(e)" class="emoji-opt">{{ e }}</span>
+          </div>
+          <div class="input-row">
+            <textarea
+              ref="messageInput"
+              v-model="messageText"
+              placeholder="Scrie un mesaj..."
+              @keydown.enter.exact.prevent="sendMessage"
+              @keydown.shift.enter="newline"
+              @input="onTyping"
+              rows="2"
+            ></textarea>
+            <button class="btn-send" @click="sendMessage" :disabled="!messageText.trim()">
+              Trimite
+            </button>
+          </div>
+          <div class="input-hint">Enter = trimite · Shift+Enter = linie nouă</div>
+        </div>
+      </div>
+
+      <!-- Room Chat Window -->
+      <div class="chat-window" v-if="activeRoom && !activeChat">
+        <div class="chat-header">
+          <div class="chat-header-user">
+            <div class="chat-header-avatar">💬</div>
+            <div>
+              <div class="chat-header-name">{{ activeRoom.name }}</div>
+              <div class="chat-header-status">{{ activeRoom.member_count }} membri conectați</div>
+            </div>
+          </div>
+          <button class="icon-btn" @click="leaveRoom(activeRoom)" title="Ieși din cameră">🚪</button>
+        </div>
+
+        <div class="messages-container" ref="roomMessagesContainer">
+          <div class="messages-inner">
+            <div
+              v-for="msg in roomMessages"
+              :key="msg.id"
+              :class="['message', msg.user_id === currentUser.id ? 'mine' : 'theirs']"
+            >
+              <div class="msg-avatar" v-if="msg.user_id !== currentUser.id">
+                {{ getAvatarEmoji(msg.avatar) }}
+              </div>
+              <div class="msg-bubble-wrap">
+                <div class="msg-sender" v-if="msg.user_id !== currentUser.id">{{ msg.display_name }}</div>
+                <div class="msg-bubble">
+                  <span class="msg-text" v-html="formatMessage(msg.content)"></span>
+                </div>
+                <div class="msg-time">{{ formatTime(msg.created_at) }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-area">
+          <div class="input-toolbar">
+            <button class="emoji-btn" @click="toggleEmojiPicker">😊</button>
+          </div>
+          <div class="emoji-picker" v-if="showEmojiPicker">
+            <span v-for="e in emojis" :key="e" @click="insertEmojiRoom(e)" class="emoji-opt">{{ e }}</span>
+          </div>
+          <div class="input-row">
+            <textarea
+              ref="roomMessageInput"
+              v-model="roomMessageText"
+              placeholder="Scrie în cameră..."
+              @keydown.enter.exact.prevent="sendRoomMessage"
+              rows="2"
+            ></textarea>
+            <button class="btn-send" @click="sendRoomMessage" :disabled="!roomMessageText.trim()">
+              Trimite
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ═══════════ PROFILE MODAL ═══════════ -->
+    <div class="modal-overlay" v-if="showProfileModal" @click.self="showProfileModal = false">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>✏️ Editează profilul</h3>
+          <button @click="showProfileModal = false">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="avatar-selector">
+            <label>Avatar</label>
+            <div class="avatar-grid">
+              <div
+                v-for="av in avatarOptions"
+                :key="av.key"
+                :class="['avatar-option', { selected: editProfile.avatar === av.key }]"
+                @click="editProfile.avatar = av.key"
+              >{{ av.emoji }}</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Nume afișat</label>
+            <input type="text" v-model="editProfile.displayName">
+          </div>
+          <div class="field">
+            <label>Mesaj status</label>
+            <input type="text" v-model="editProfile.statusMessage" placeholder="Ce mai faci?">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" @click="showProfileModal = false">Anulează</button>
+          <button class="btn-primary-small" @click="saveProfile">Salvează</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Context menu for contacts -->
+    <div class="context-menu" v-if="contextMenu.visible"
+      :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }"
+      @mouseleave="contextMenu.visible = false">
+      <div class="ctx-item" @click="openChat(contextMenu.contact); contextMenu.visible = false">
+        💬 Deschide chat
+      </div>
+      <div class="ctx-item ctx-danger" @click="removeContact(contextMenu.contact)">
+        🗑️ Șterge contact
+      </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" v-if="toast.visible" :class="toast.type">
+      {{ toast.message }}
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="js/chat.js"></script>
+</body>
+</html>
