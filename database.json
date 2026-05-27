@@ -9,8 +9,12 @@
       "avatar": "cool",
       "status": "online",
       "status_message": "Hello!",
+<<<<<<< HEAD
       "created_at": "2026-05-09T16:07:08.429Z",
       "current_session_ip": null
+=======
+      "created_at": "2026-05-09T16:07:08.429Z"
+>>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
     },
     {
       "id": 2,
@@ -21,6 +25,7 @@
       "avatar": "cat",
       "status": "offline",
       "status_message": "Hello!",
+<<<<<<< HEAD
       "created_at": "2026-05-09T16:08:12.463Z",
       "current_session_ip": null
     },
@@ -59,6 +64,9 @@
       "status_message": "Hello!",
       "created_at": "2026-05-27T15:58:11.091Z",
       "current_session_ip": null
+=======
+      "created_at": "2026-05-09T16:08:12.463Z"
+>>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
     }
   ],
   "contacts": [
@@ -71,6 +79,7 @@
       "user_id": 2,
       "contact_id": 1,
       "status": "accepted"
+<<<<<<< HEAD
     },
     {
       "user_id": 3,
@@ -86,6 +95,8 @@
       "user_id": 4,
       "contact_id": 5,
       "status": "accepted"
+=======
+>>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
     }
   ],
   "messages": [
@@ -158,6 +169,7 @@
       "receiver_id": 2,
       "content": "ceva",
       "created_at": "2026-05-09T16:48:03.399Z"
+<<<<<<< HEAD
     },
     {
       "id": 1779897526529,
@@ -172,6 +184,8 @@
       "receiver_id": 4,
       "content": "asdawd😭",
       "created_at": "2026-05-27T15:58:56.528Z"
+=======
+>>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
     }
   ],
   "chat_rooms": [
