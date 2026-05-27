@@ -29,34 +29,10 @@ io.use((socket, next) => {
   try { socket.user = jwt.verify(token, JWT_SECRET); next(); } catch (e) { next(new Error('Auth error')); }
 });
 
-<<<<<<< HEAD
-const activeSocketsByUserId = new Map();
-
-=======
->>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
 io.on('connection', (socket) => {
   const userId = socket.user.id;
   socket.join(`user_${userId}`);
 
-<<<<<<< HEAD
-  // Ținem evidența sesiunilor active per user (mai multe sockets pot exista simultan)
-  const existing = activeSocketsByUserId.get(userId) || new Set();
-  existing.add(socket.id);
-  activeSocketsByUserId.set(userId, existing);
-
-  const data = db.getRawData();
-  const user = data.users.find(u => u.id === userId);
-  if (user) {
-    // Setăm online doar prima dată când apare o sesiune activă
-    if (existing.size === 1) {
-      user.status = 'online';
-      db.save();
-      io.to(`user_${userId}`).emit('status_change', { userId, status: 'online' });
-    }
-  }
-
-
-=======
   const data = db.getRawData();
   const user = data.users.find(u => u.id === userId);
   if (user) {
@@ -65,7 +41,6 @@ io.on('connection', (socket) => {
     io.emit('status_change', { userId, status: 'online' });
   }
 
->>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
   socket.on('private_message', ({ toUserId, content }) => {
     const msg = {
       id: Date.now(),
@@ -100,29 +75,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-<<<<<<< HEAD
-    if (!activeSocketsByUserId.has(userId)) return;
-
-    const set = activeSocketsByUserId.get(userId);
-    set.delete(socket.id);
-
-    // Dacă mai există sesiuni active, nu coborâm statusul
-    if (set.size === 0) {
-      activeSocketsByUserId.delete(userId);
-      const data = db.getRawData();
-      const user = data.users.find(u => u.id === userId);
-      if (user) {
-        user.status = 'offline';
-        user.current_session_ip = null;  // Ștergem IP-ul la deconectare
-        db.save();
-        io.to(`user_${userId}`).emit('status_change', { userId, status: 'offline' });
-      }
-=======
     if (user) {
       user.status = 'offline';
       db.save();
       io.emit('status_change', { userId, status: 'offline' });
->>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
     }
   });
 });

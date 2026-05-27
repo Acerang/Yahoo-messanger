@@ -364,10 +364,6 @@
       color: var(--text-mid);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-<<<<<<< HEAD
-      -webkit-user-select: none;
-=======
->>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
       user-select: none;
     }
 
@@ -550,7 +546,9 @@
     }
 
     .chat-header-user {
-      display: flex;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
       align-items: center;
       gap: 10px;
     }
@@ -1043,13 +1041,8 @@
             </div>
           </div>
           <div class="field">
-<<<<<<< HEAD
             <label for="edit-status">Status</label>
             <select id="edit-status" v-model="editStatus">
-=======
-            <label>Status</label>
-            <select v-model="editStatus">
->>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
               <option value="online">🟢 Online</option>
               <option value="away">🟡 Plecat</option>
               <option value="busy">🔴 Ocupat</option>
@@ -1216,17 +1209,11 @@
             <span v-for="e in emojis" :key="e" class="emoji-opt" @click="insertEmoji(e)">{{ e }}</span>
           </div>
           <div class="input-row">
-<<<<<<< HEAD
-            <label for="messageTextArea" class="visually-hidden">Scrie un mesaj pentru {{ activeChat.display_name }}</label>
-            <textarea id="messageTextArea" ref="textarea" v-model="messageText" @keydown.enter.exact.prevent="sendMessage"
-              @keydown.shift.enter.exact="messageText += '\n'"
-              :placeholder="'Scrie un mesaj lui ' + activeChat.display_name + '...'"
-              :title="'Scrie un mesaj lui ' + activeChat.display_name + '...'" rows="2"></textarea>
-=======
             <textarea ref="textarea" v-model="messageText" @keydown.enter.exact.prevent="sendMessage"
               @keydown.shift.enter.exact="messageText += '\n'"
-              :placeholder="'Scrie un mesaj lui ' + activeChat.display_name + '...'" rows="2"></textarea>
->>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
+              :placeholder="'Scrie un mesaj lui ' + activeChat.display_name + '...'"
+              :title="'Scrie un mesaj lui ' + activeChat.display_name + '...'"
+              rows="2"></textarea>
             <button class="btn-send" @click="sendMessage" :disabled="!messageText.trim()">
               Trimite ►
             </button>

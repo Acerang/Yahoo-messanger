@@ -20,29 +20,10 @@ router.post('/login', (req, res) => {
   const user = db.prepare('SELECT * FROM users WHERE username = ? OR email = ?').get(username.toLowerCase(), username.toLowerCase());
   if (!user || !bcrypt.compareSync(password, user.password)) return res.status(401).json({ error: 'Date incorecte' });
 
-<<<<<<< HEAD
-  // Obțin IP-ul clientului
-  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-  
-  // Verific dacă utilizatorul e deja conectat de pe alt IP
-  if (user.current_session_ip && user.current_session_ip !== clientIp) {
-    return res.status(403).json({ error: 'User already logged in from another location' });
-  }
-
-  // Actualizez IP-ul sesiunii
-  user.current_session_ip = clientIp;
-  db.save();
-
   const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET);
   const opt = { httpOnly: true };
   if (remember) opt.maxAge = 7 * 24 * 60 * 60 * 1000;
 
-=======
-  const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET);
-  const opt = { httpOnly: true };
-  if (remember) opt.maxAge = 7 * 24 * 60 * 60 * 1000;
-
->>>>>>> 18b913a957e33bee26b4d6b87a56b22aa12e7ba7
   res.cookie('token', token, opt).json({
     success: true,
     user: {
