@@ -1,178 +1,1170 @@
 <!DOCTYPE html>
 <html lang="ro">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yahoo! Messenger</title>
-  <link rel="stylesheet" href="css/chat.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Verdana&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --yahoo-purple: #720e9e;
+      --yahoo-purple-dark: #4a0066;
+      --yahoo-purple-light: #9b30c8;
+      --yahoo-yellow: #ffcc00;
+      --sidebar-bg: #f0e6fa;
+      --sidebar-border: #d4b8e8;
+      --header-bg: linear-gradient(to bottom, #9b30c8, #720e9e);
+      --msg-mine-bg: #dce8ff;
+      --msg-mine-border: #a8c4f0;
+      --msg-theirs-bg: #fff;
+      --msg-theirs-border: #e0d0f0;
+      --input-bg: #f8f2ff;
+      --text-dark: #1a0033;
+      --text-mid: #5a3a7a;
+      --shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    [v-cloak] {
+      display: none;
+    }
+
+    body {
+      font-family: Verdana, Arial, sans-serif;
+      background: #d8c8ea;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #app {
+      display: flex;
+      height: 100vh;
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ═══ SIDEBAR ═══ */
+    .sidebar {
+      width: 260px;
+      min-width: 220px;
+      background: var(--sidebar-bg);
+      border-right: 2px solid var(--sidebar-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .my-profile {
+      background: var(--header-bg);
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .my-avatar {
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .avatar-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .avatar-icon:hover {
+      transform: scale(1.1);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid white;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+
+    .status-dot.online {
+      background: #44cc44;
+    }
+
+    .status-dot.away {
+      background: #ffcc00;
+    }
+
+    .status-dot.busy {
+      background: #cc2222;
+    }
+
+    .status-dot.offline {
+      background: #888888;
+    }
+
+    .my-info {
+      flex: 1;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .my-name {
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .my-status-msg {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      padding: 3px 7px;
+      font-size: 13px;
+      transition: background 0.2s;
+      line-height: 1.4;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    /* Tabs */
+    .sidebar-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--sidebar-border);
+      background: #e8d8f8;
+      flex-shrink: 0;
+    }
+
+    .stab {
+      flex: 1;
+      padding: 8px 4px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 11px;
+      font-family: Verdana, sans-serif;
+      font-weight: 700;
+      color: var(--text-mid);
+      transition: all 0.2s;
+    }
+
+    .stab.active {
+      background: white;
+      color: var(--yahoo-purple);
+      border-bottom: 2px solid var(--yahoo-purple);
+      margin-bottom: -2px;
+    }
+
+    .stab-alert {
+      animation: tab-flash 1s infinite;
+    }
+
+    @keyframes tab-flash {
+
+      0%,
+      100% {
+        color: var(--text-mid);
+      }
+
+      50% {
+        color: #cc2222;
+      }
+    }
+
+    .req-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #cc2222;
+      color: white;
+      border-radius: 10px;
+      min-width: 16px;
+      height: 16px;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 0 4px;
+      margin-left: 3px;
+      vertical-align: middle;
+    }
+
+    /* Add contact panel */
+    .add-contact-panel {
+      padding: 8px;
+      background: #f8eeff;
+      border-bottom: 1px solid var(--sidebar-border);
+      flex-shrink: 0;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .search-row input {
+      flex: 1;
+      padding: 6px 8px;
+      border: 1px solid var(--sidebar-border);
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: Verdana, sans-serif;
+      outline: none;
+    }
+
+    .search-row input:focus {
+      border-color: var(--yahoo-purple);
+    }
+
+    .search-row button {
+      padding: 6px 10px;
+      background: #ddd;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .search-results {
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .search-result {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      background: white;
+      border: 1px solid #e8e0f5;
+      border-radius: 4px;
+      margin-bottom: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: background 0.2s;
+    }
+
+    .search-result:hover {
+      background: #f0e8ff;
+    }
+
+    .sr-avatar {
+      font-size: 18px;
+    }
+
+    .sr-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .sr-name {
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .sr-username {
+      color: #888;
+      font-size: 10px;
+    }
+
+    .btn-add-small {
+      background: var(--yahoo-purple);
+      color: white;
+      border: none;
+      border-radius: 3px;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 8px;
+      color: #888;
+      font-size: 11px;
+    }
+
+    /* Contacts list */
+    .contacts-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 0;
+    }
+
+    .contacts-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .contacts-list::-webkit-scrollbar-thumb {
+      background: #c8a8e8;
+      border-radius: 3px;
+    }
+
+    .empty-list {
+      padding: 24px 16px;
+      text-align: center;
+      color: #888;
+      font-size: 11px;
+      line-height: 2.2;
+    }
+
+    .group-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      background: linear-gradient(to right, #e0ccf5, #d8c4f0);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-mid);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .contact-item:hover {
+      background: #ede0ff;
+    }
+
+    .contact-item.active {
+      background: #ddc8f8;
+      border-left: 3px solid var(--yahoo-purple);
+    }
+
+    .contact-item.offline {
+      opacity: 0.65;
+    }
+
+    .contact-avatar {
+      position: relative;
+      font-size: 24px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .contact-avatar .status-dot {
+      width: 8px;
+      height: 8px;
+      right: -1px;
+      bottom: -1px;
+    }
+
+    .contact-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .contact-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .contact-status-msg {
+      font-size: 10px;
+      color: #888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Request items */
+    .request-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid #ede0ff;
+    }
+
+    .request-btns {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .btn-accept-req {
+      background: #2a7a2a;
+      color: white;
+      border: 1px solid #3a9a3a;
+      border-radius: 4px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .btn-accept-req:hover {
+      background: #3a9a3a;
+    }
+
+    .btn-reject-req {
+      background: #7a2a2a;
+      color: white;
+      border: 1px solid #9a4a4a;
+      border-radius: 4px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .btn-reject-req:hover {
+      background: #9a3a3a;
+    }
+
+    /* ═══ CHAT AREA ═══ */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #f5f0ff;
+    }
+
+    .welcome-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .welcome-logo {
+      font-size: 80px;
+      font-weight: 900;
+      color: var(--yahoo-purple);
+      font-family: Georgia, serif;
+      text-shadow: 3px 3px 0 rgba(114, 14, 158, 0.2);
+      line-height: 1;
+    }
+
+    .welcome-screen h2 {
+      font-size: 22px;
+      color: var(--text-dark);
+    }
+
+    .welcome-screen p {
+      color: #888;
+      font-size: 12px;
+    }
+
+    .welcome-tips {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tip {
+      background: white;
+      border: 1px solid #e0d0f5;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 11px;
+      color: var(--text-mid);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .chat-window {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: white;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--header-bg);
+      border-bottom: 2px solid var(--yahoo-purple-dark);
+      flex-shrink: 0;
+    }
+
+    .chat-header-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-header-avatar {
+      font-size: 28px;
+      position: relative;
+      width: 36px;
+      text-align: center;
+      line-height: 1;
+    }
+
+    .chat-header-avatar .status-dot {
+      right: -2px;
+      bottom: -2px;
+    }
+
+    .chat-header-name {
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .chat-header-status {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .status-text-online {
+      color: #88ff88;
+    }
+
+    .status-text-away {
+      color: #ffcc44;
+    }
+
+    .status-text-busy {
+      color: #ff8888;
+    }
+
+    .status-text-offline {
+      color: #cccccc;
+    }
+
+    .messages-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      background:
+        linear-gradient(rgba(245, 240, 255, 0.95), rgba(245, 240, 255, 0.95)),
+        repeating-linear-gradient(45deg, transparent, transparent 40px,
+          rgba(180, 140, 220, 0.04) 40px, rgba(180, 140, 220, 0.04) 80px);
+    }
+
+    .messages-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb {
+      background: #c8a8e8;
+      border-radius: 3px;
+    }
+
+    .messages-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .message {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      max-width: 78%;
+      animation: msg-appear 0.2s ease-out;
+    }
+
+    @keyframes msg-appear {
+      from {
+        transform: translateY(8px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .message.mine {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .message.theirs {
+      align-self: flex-start;
+    }
+
+    .msg-avatar {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-bottom: 4px;
+    }
+
+    .msg-bubble-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .message.mine .msg-bubble-wrap {
+      align-items: flex-end;
+    }
+
+    .msg-bubble {
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .message.mine .msg-bubble {
+      background: var(--msg-mine-bg);
+      border: 1px solid var(--msg-mine-border);
+      border-bottom-right-radius: 3px;
+    }
+
+    .message.theirs .msg-bubble {
+      background: var(--msg-theirs-bg);
+      border: 1px solid var(--msg-theirs-border);
+      border-bottom-left-radius: 3px;
+    }
+
+    .msg-time {
+      font-size: 9px;
+      color: #aaa;
+      padding: 0 4px;
+    }
+
+    /* Input area — zona separata, distincta */
+    .input-area {
+      flex-shrink: 0;
+      border-top: 3px solid var(--yahoo-purple);
+      background: var(--input-bg);
+    }
+
+    .input-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: #ede0ff;
+      border-bottom: 1px solid #d4b8e8;
+    }
+
+    .emoji-btn {
+      background: none;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      cursor: pointer;
+      padding: 2px 6px;
+      font-size: 16px;
+      transition: all 0.15s;
+    }
+
+    .emoji-btn:hover {
+      background: white;
+      border-color: var(--sidebar-border);
+    }
+
+    .toolbar-sep {
+      color: #ccc;
+      padding: 0 2px;
+      font-size: 14px;
+    }
+
+    .toolbar-hint {
+      font-size: 10px;
+      color: #999;
+      margin-left: auto;
+    }
+
+    .emoji-picker {
+      background: white;
+      border: 1px solid var(--sidebar-border);
+      padding: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      max-height: 90px;
+      overflow-y: auto;
+      border-bottom: 1px solid var(--sidebar-border);
+    }
+
+    .emoji-opt {
+      font-size: 20px;
+      cursor: pointer;
+      padding: 2px;
+      border-radius: 4px;
+      transition: background 0.1s;
+    }
+
+    .emoji-opt:hover {
+      background: #f0e0ff;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+      padding: 8px 10px;
+      gap: 8px;
+    }
+
+    .input-row textarea {
+      flex: 1;
+      padding: 8px 10px;
+      border: 2px solid #d0b8e8;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: Verdana, sans-serif;
+      resize: none;
+      outline: none;
+      background: white;
+      transition: border-color 0.2s;
+      line-height: 1.5;
+      min-height: 52px;
+    }
+
+    .input-row textarea:focus {
+      border-color: var(--yahoo-purple);
+    }
+
+    .btn-send {
+      padding: 0 20px;
+      background: linear-gradient(to bottom, var(--yahoo-purple-light), var(--yahoo-purple-dark));
+      color: white;
+      border: 1px solid var(--yahoo-purple-dark);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: Verdana, sans-serif;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-send:hover:not(:disabled) {
+      background: linear-gradient(to bottom, #b040dc, #5a0080);
+    }
+
+    .btn-send:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .input-hint {
+      font-size: 9px;
+      color: #aaa;
+      padding: 0 10px 6px;
+      text-align: right;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 10px;
+      width: 360px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      background: var(--header-bg);
+      color: white;
+    }
+
+    .modal-header h3 {
+      font-size: 14px;
+    }
+
+    .modal-header button {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .modal-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .avatar-selector label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-mid);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .avatar-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .avatar-option {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .avatar-option:hover {
+      border-color: var(--yahoo-purple);
+      transform: scale(1.1);
+    }
+
+    .avatar-option.selected {
+      border-color: var(--yahoo-purple);
+      background: #f0e0ff;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-mid);
+      text-transform: uppercase;
+    }
+
+    .field input,
+    .field select {
+      padding: 8px 10px;
+      border: 2px solid #d0b8e8;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: Verdana, sans-serif;
+      outline: none;
+      background: white;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--yahoo-purple);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 16px;
+      background: #f8f0ff;
+      border-top: 1px solid #e8d8f8;
+    }
+
+    .btn-secondary {
+      padding: 8px 16px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: Verdana, sans-serif;
+    }
+
+    .btn-primary-small {
+      padding: 8px 16px;
+      background: var(--yahoo-purple);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: Verdana, sans-serif;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      background: #333;
+      color: white;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      z-index: 3000;
+      font-family: Verdana, sans-serif;
+      animation: toast-in 0.3s ease;
+    }
+
+    .toast.success {
+      background: #1a7a3a;
+    }
+
+    .toast.error {
+      background: #cc2222;
+    }
+
+    .toast.info {
+      background: var(--yahoo-purple);
+    }
+
+    @keyframes toast-in {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    *::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    *::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    *::-webkit-scrollbar-thumb {
+      background: #c8a8e8;
+      border-radius: 3px;
+    }
+  </style>
 </head>
+
 <body>
   <div id="app" v-cloak>
 
-    <!-- ═══════════ SIDEBAR ═══════════ -->
-    <aside class="sidebar">
-      <!-- My Profile -->
-      <div class="my-profile">
-        <div class="my-avatar" @click="showProfileModal = true">
-          <div class="avatar-icon" :class="'avatar-' + (currentUser.avatar || 'default')">
-            {{ getAvatarEmoji(currentUser.avatar) }}
+    <!-- TOAST -->
+    <div v-if="toastMsg" :class="['toast', toastType]">{{ toastMsg }}</div>
+
+    <!-- MODAL PROFIL -->
+    <div v-if="showProfileModal" class="modal-overlay" @click.self="showProfileModal = false">
+      <div class="modal">
+        <div class="modal-header">
+          <h3>✏️ Editează Profilul</h3>
+          <button @click="showProfileModal = false">✖</button>
+        </div>
+        <div class="modal-body">
+          <div class="avatar-selector">
+            <label>Alege Avatar</label>
+            <div class="avatar-grid">
+              <div v-for="(emoji, key) in avatarMap" :key="key"
+                :class="['avatar-option', editAvatar === key ? 'selected' : '']" @click="editAvatar = key">{{ emoji }}
+              </div>
+            </div>
           </div>
+          <div class="field">
+            <label for="edit-status">Status</label>
+            <select id="edit-status" v-model="editStatus">
+              <option value="online">🟢 Online</option>
+              <option value="away">🟡 Plecat</option>
+              <option value="busy">🔴 Ocupat</option>
+              <option value="offline">⚫ Invizibil</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Mesaj personal</label>
+            <input v-model="editStatusMessage" placeholder="Ce mai faci?..." maxlength="60">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" @click="showProfileModal = false">Anulează</button>
+          <button class="btn-primary-small" @click="saveProfile">💾 Salvează</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="my-profile">
+        <div class="my-avatar" @click="openProfileModal">
+          <div class="avatar-icon">{{ getAvatarEmoji(currentUser.avatar) }}</div>
           <div class="status-dot" :class="currentUser.status"></div>
         </div>
-        <div class="my-info">
-          <div class="my-name" @click="showProfileModal = true">{{ currentUser.displayName }}</div>
-          <div class="my-status-msg">{{ currentUser.statusMessage || 'Click pentru a edita...' }}</div>
+        <div class="my-info" @click="openProfileModal">
+          <div class="my-name">{{ currentUser.display_name }}</div>
+          <div class="my-status-msg">{{ currentUser.status_message || 'Click pentru editare...' }}</div>
         </div>
         <div class="header-actions">
           <button class="icon-btn" @click="showAddContact = !showAddContact" title="Adaugă contact">➕</button>
-          <button class="icon-btn" @click="doLogout" title="Deconectare">🚪</button>
+          <button class="icon-btn" @click="doLogout" title="Ieșire">🚪</button>
         </div>
       </div>
 
-      <!-- Status Selector -->
-      <div class="status-bar">
-        <select v-model="currentUser.status" @change="changeStatus" class="status-select">
-          <option value="online">🟢 Online</option>
-          <option value="away">🟡 Plecat</option>
-          <option value="busy">🔴 Ocupat</option>
-          <option value="offline">⚫ Invizibil</option>
-        </select>
-      </div>
-
-      <!-- Add Contact Panel -->
-      <div class="add-contact-panel" v-if="showAddContact">
-        <div class="search-row">
-          <input type="text" v-model="searchQuery" placeholder="Caută username..."
-            @input="searchUsers" @keyup.enter="searchUsers">
-          <button @click="showAddContact = false">✕</button>
-        </div>
-        <div class="search-results">
-          <div class="search-result" v-for="u in searchResults" :key="u.id" @click="addContact(u)">
-            <span class="sr-avatar">{{ getAvatarEmoji(u.avatar) }}</span>
-            <span class="sr-name">{{ u.display_name }}</span>
-            <span class="sr-username">@{{ u.username }}</span>
-            <button class="btn-add-small">+</button>
-          </div>
-          <div class="no-results" v-if="searchQuery.length >= 2 && searchResults.length === 0">
-            Niciun rezultat
-          </div>
-        </div>
-      </div>
-
-      <!-- Tabs: Contacts / Rooms -->
       <div class="sidebar-tabs">
-        <button :class="['stab', { active: sidebarTab === 'contacts' }]" @click="sidebarTab = 'contacts'">
+        <button :class="['stab', activeTab==='contacts' ? 'active' : '']" @click="switchTab('contacts')">
           👥 Contacte
         </button>
-        <button :class="['stab', { active: sidebarTab === 'rooms' }]" @click="sidebarTab = 'rooms'; loadRooms()">
-          💬 Camere
+        <button :class="['stab', activeTab==='requests' ? 'active' : '', newRequestAlert ? 'stab-alert' : '']"
+          @click="switchTab('requests')">
+          📨 Cereri
+          <span v-if="friendRequests.length > 0" class="req-badge">{{ friendRequests.length }}</span>
         </button>
       </div>
 
-      <!-- CONTACTS LIST -->
-      <div class="contacts-list" v-if="sidebarTab === 'contacts'">
-        <div v-if="contacts.length === 0" class="empty-list">
-          <p>Lista ta de contacte este goală.</p>
-          <p>Adaugă contacte cu butonul ➕</p>
+      <div class="add-contact-panel" v-if="showAddContact">
+        <div class="search-row">
+          <input v-model="searchQuery" @input="searchUsers" placeholder="🔍 Caută username...">
+          <button @click="showAddContact=false; searchQuery=''; searchResults=[]">✖</button>
         </div>
-
-        <!-- Online contacts -->
-        <div class="contact-group" v-if="onlineContacts.length > 0">
-          <div class="group-header" @click="toggleGroup('online')">
-            <span class="group-arrow" :class="{ collapsed: collapsedGroups.online }">▼</span>
-            Online ({{ onlineContacts.length }})
-          </div>
-          <div class="group-items" v-if="!collapsedGroups.online">
-            <div
-              v-for="contact in onlineContacts"
-              :key="contact.id"
-              class="contact-item"
-              :class="{ active: activeChat && activeChat.id === contact.id }"
-              @click="openChat(contact)"
-              @contextmenu.prevent="showContactMenu($event, contact)"
-            >
-              <div class="contact-avatar">
-                <span>{{ getAvatarEmoji(contact.avatar) }}</span>
-                <div class="status-dot" :class="contact.status"></div>
-              </div>
-              <div class="contact-info">
-                <div class="contact-name">
-                  {{ contact.display_name }}
-                  <span class="unread-badge" v-if="unreadCounts[contact.id]">
-                    {{ unreadCounts[contact.id] }}
-                  </span>
-                </div>
-                <div class="contact-status-msg">{{ contact.status_message || contact.status }}</div>
-              </div>
+        <div class="search-results">
+          <div v-for="u in searchResults" :key="u.id" class="search-result" @click="addContact(u)">
+            <span class="sr-avatar">{{ getAvatarEmoji(u.avatar) }}</span>
+            <div class="sr-info">
+              <span class="sr-name">{{ u.display_name }}</span>
+              <span class="sr-username">@{{ u.username }}</span>
             </div>
+            <button class="btn-add-small">+</button>
           </div>
-        </div>
-
-        <!-- Offline contacts -->
-        <div class="contact-group" v-if="offlineContacts.length > 0">
-          <div class="group-header" @click="toggleGroup('offline')">
-            <span class="group-arrow" :class="{ collapsed: collapsedGroups.offline }">▼</span>
-            Offline ({{ offlineContacts.length }})
-          </div>
-          <div class="group-items" v-if="!collapsedGroups.offline">
-            <div
-              v-for="contact in offlineContacts"
-              :key="contact.id"
-              class="contact-item offline"
-              :class="{ active: activeChat && activeChat.id === contact.id }"
-              @click="openChat(contact)"
-            >
-              <div class="contact-avatar">
-                <span>{{ getAvatarEmoji(contact.avatar) }}</span>
-                <div class="status-dot offline"></div>
-              </div>
-              <div class="contact-info">
-                <div class="contact-name">{{ contact.display_name }}</div>
-                <div class="contact-status-msg">Offline</div>
-              </div>
-            </div>
+          <div v-if="searchQuery.length >= 2 && searchResults.length === 0" class="no-results">
+            Niciun utilizator găsit
           </div>
         </div>
       </div>
 
-      <!-- ROOMS LIST -->
-      <div class="contacts-list" v-if="sidebarTab === 'rooms'">
-        <div
-          v-for="room in rooms"
-          :key="room.id"
-          class="contact-item"
-          :class="{ active: activeRoom && activeRoom.id === room.id }"
-          @click="openRoom(room)"
-        >
+      <!-- TAB CONTACTE -->
+      <div class="contacts-list" v-if="activeTab === 'contacts'">
+        <div class="group-header">🟢 Online ({{ onlineContacts.length }})</div>
+        <div v-for="c in onlineContacts" :key="c.id"
+          :class="['contact-item', activeChat && activeChat.id===c.id ? 'active' : '']" @click="openChat(c)">
           <div class="contact-avatar">
-            <span>💬</span>
+            <span>{{ getAvatarEmoji(c.avatar) }}</span>
+            <div class="status-dot" :class="c.status"></div>
           </div>
           <div class="contact-info">
-            <div class="contact-name">{{ room.name }}</div>
-            <div class="contact-status-msg">{{ room.member_count }} membri</div>
+            <div class="contact-name">{{ c.display_name }}</div>
+            <div class="contact-status-msg">{{ c.status_message || '' }}</div>
+          </div>
+        </div>
+
+        <div class="group-header">⚫ Offline ({{ offlineContacts.length }})</div>
+        <div v-for="c in offlineContacts" :key="c.id"
+          :class="['contact-item', 'offline', activeChat && activeChat.id===c.id ? 'active' : '']" @click="openChat(c)">
+          <div class="contact-avatar">
+            <span>{{ getAvatarEmoji(c.avatar) }}</span>
+          </div>
+          <div class="contact-info">
+            <div class="contact-name">{{ c.display_name }}</div>
+          </div>
+        </div>
+
+        <div v-if="contacts.length === 0" class="empty-list">
+          Nicio persoană adăugată.<br>Apasă ➕ pentru a căuta!
+        </div>
+      </div>
+
+      <!-- TAB CERERI -->
+      <div class="contacts-list" v-if="activeTab === 'requests'">
+        <div class="group-header">📨 Cereri primite ({{ friendRequests.length }})</div>
+        <div v-if="friendRequests.length === 0" class="empty-list">
+          Nicio cerere momentan.
+        </div>
+        <div v-for="r in friendRequests" :key="r.id" class="request-item">
+          <div class="contact-avatar" style="font-size:22px;">{{ getAvatarEmoji(r.avatar) }}</div>
+          <div class="contact-info">
+            <div class="contact-name">{{ r.display_name }}</div>
+            <div class="contact-status-msg">@{{ r.username }}</div>
+          </div>
+          <div class="request-btns">
+            <button class="btn-accept-req" @click="acceptFriend(r.id)">✔</button>
+            <button class="btn-reject-req" @click="rejectFriend(r.id)">✖</button>
           </div>
         </div>
       </div>
+
     </aside>
 
-    <!-- ═══════════ CHAT AREA ═══════════ -->
+    <!-- CHAT AREA -->
     <main class="chat-area">
+      <div v-if="activeChat" class="chat-window">
 
-      <!-- Welcome Screen -->
-      <div class="welcome-screen" v-if="!activeChat && !activeRoom">
-        <div class="welcome-logo">Y!</div>
-        <h2>Yahoo! Messenger</h2>
-        <p>Selectează un contact sau o cameră de chat pentru a începe conversația</p>
-        <div class="welcome-tips">
-          <div class="tip">💡 Apasă dublu click pe un contact pentru a trimite un mesaj</div>
-          <div class="tip">🎭 Schimbă-ți statusul din bara din stânga</div>
-          <div class="tip">➕ Adaugă contacte noi căutând username-ul lor</div>
-        </div>
-      </div>
-
-      <!-- Private Chat Window -->
-      <div class="chat-window" v-if="activeChat">
-        <!-- Chat Header -->
         <div class="chat-header">
           <div class="chat-header-user">
             <div class="chat-header-avatar">
@@ -181,190 +1173,72 @@
             </div>
             <div>
               <div class="chat-header-name">{{ activeChat.display_name }}</div>
-              <div class="chat-header-status">
-                <span :class="'status-text-' + activeChat.status">
-                  {{ statusLabel(activeChat.status) }}
-                </span>
-                <span v-if="typingUsers[activeChat.id]" class="typing-indicator"> — scrie...</span>
+              <div :class="['chat-header-status', 'status-text-' + activeChat.status]">
+                {{ {online:'🟢 Online', away:'🟡 Plecat', busy:'🔴 Ocupat', offline:'⚫ Offline'}[activeChat.status] }}
+                <span v-if="activeChat.status_message"> — {{ activeChat.status_message }}</span>
               </div>
             </div>
           </div>
-          <div class="chat-header-actions">
-            <button class="icon-btn" @click="activeChat = null" title="Închide">✕</button>
-          </div>
         </div>
 
-        <!-- Messages -->
-        <div class="messages-container" ref="messagesContainer">
+        <div class="messages-container" ref="msgs">
           <div class="messages-inner">
-            <div class="load-more" v-if="canLoadMore" @click="loadMoreMessages">
-              Încarcă mesaje mai vechi...
-            </div>
-            <div
-              v-for="msg in activeMessages"
-              :key="msg.id"
-              :class="['message', msg.sender_id === currentUser.id ? 'mine' : 'theirs']"
-            >
-              <div class="msg-avatar" v-if="msg.sender_id !== currentUser.id">
-                {{ getAvatarEmoji(activeChat.avatar) }}
+            <div v-for="(m, i) in activeMessages" :key="m.id || i"
+              :class="['message', m.sender_id === currentUser.id ? 'mine' : 'theirs']">
+              <div class="msg-avatar">
+                {{ m.sender_id === currentUser.id ? getAvatarEmoji(currentUser.avatar) :
+                getAvatarEmoji(activeChat.avatar) }}
               </div>
               <div class="msg-bubble-wrap">
-                <div class="msg-bubble">
-                  <span class="msg-text" v-html="formatMessage(msg.content)"></span>
-                </div>
-                <div class="msg-time">{{ formatTime(msg.created_at) }}</div>
+                <div class="msg-bubble">{{ m.content }}</div>
+                <div class="msg-time">{{ formatTime(m.created_at) }}</div>
               </div>
-            </div>
-            <div class="typing-bubble" v-if="typingUsers[activeChat.id]">
-              <span>{{ activeChat.display_name }} scrie</span>
-              <span class="dots"><span>.</span><span>.</span><span>.</span></span>
             </div>
           </div>
         </div>
 
-        <!-- Input Area -->
+        <!-- INPUT SEPARAT, DELIMITAT -->
         <div class="input-area">
           <div class="input-toolbar">
-            <button class="emoji-btn" @click="toggleEmojiPicker" title="Emoticoane">😊</button>
+            <button class="emoji-btn" @click="showEmojiPicker = !showEmojiPicker">😊</button>
             <span class="toolbar-sep">|</span>
-            <button class="format-btn" @click="insertText('bold')" title="Bold"><b>B</b></button>
-            <button class="format-btn" @click="insertText('italic')" title="Italic"><i>I</i></button>
+            <span class="toolbar-hint">Enter = trimite &nbsp;·&nbsp; Shift+Enter = linie nouă</span>
           </div>
-          <div class="emoji-picker" v-if="showEmojiPicker">
-            <span v-for="e in emojis" :key="e" @click="insertEmoji(e)" class="emoji-opt">{{ e }}</span>
+          <div v-if="showEmojiPicker" class="emoji-picker">
+            <span v-for="e in emojis" :key="e" class="emoji-opt" @click="insertEmoji(e)">{{ e }}</span>
           </div>
           <div class="input-row">
-            <textarea
-              ref="messageInput"
-              v-model="messageText"
-              placeholder="Scrie un mesaj..."
-              @keydown.enter.exact.prevent="sendMessage"
-              @keydown.shift.enter="newline"
-              @input="onTyping"
-              rows="2"
-            ></textarea>
+            <label for="messageTextArea" class="visually-hidden">Scrie un mesaj pentru {{ activeChat.display_name }}</label>
+            <textarea id="messageTextArea" ref="textarea" v-model="messageText" @keydown.enter.exact.prevent="sendMessage"
+              @keydown.shift.enter.exact="messageText += '\n'"
+              :placeholder="'Scrie un mesaj lui ' + activeChat.display_name + '...'"
+              :title="'Scrie un mesaj lui ' + activeChat.display_name + '...'" rows="2"></textarea>
             <button class="btn-send" @click="sendMessage" :disabled="!messageText.trim()">
-              Trimite
+              Trimite ►
             </button>
           </div>
-          <div class="input-hint">Enter = trimite · Shift+Enter = linie nouă</div>
         </div>
+
       </div>
 
-      <!-- Room Chat Window -->
-      <div class="chat-window" v-if="activeRoom && !activeChat">
-        <div class="chat-header">
-          <div class="chat-header-user">
-            <div class="chat-header-avatar">💬</div>
-            <div>
-              <div class="chat-header-name">{{ activeRoom.name }}</div>
-              <div class="chat-header-status">{{ activeRoom.member_count }} membri conectați</div>
-            </div>
-          </div>
-          <button class="icon-btn" @click="leaveRoom(activeRoom)" title="Ieși din cameră">🚪</button>
-        </div>
-
-        <div class="messages-container" ref="roomMessagesContainer">
-          <div class="messages-inner">
-            <div
-              v-for="msg in roomMessages"
-              :key="msg.id"
-              :class="['message', msg.user_id === currentUser.id ? 'mine' : 'theirs']"
-            >
-              <div class="msg-avatar" v-if="msg.user_id !== currentUser.id">
-                {{ getAvatarEmoji(msg.avatar) }}
-              </div>
-              <div class="msg-bubble-wrap">
-                <div class="msg-sender" v-if="msg.user_id !== currentUser.id">{{ msg.display_name }}</div>
-                <div class="msg-bubble">
-                  <span class="msg-text" v-html="formatMessage(msg.content)"></span>
-                </div>
-                <div class="msg-time">{{ formatTime(msg.created_at) }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="input-area">
-          <div class="input-toolbar">
-            <button class="emoji-btn" @click="toggleEmojiPicker">😊</button>
-          </div>
-          <div class="emoji-picker" v-if="showEmojiPicker">
-            <span v-for="e in emojis" :key="e" @click="insertEmojiRoom(e)" class="emoji-opt">{{ e }}</span>
-          </div>
-          <div class="input-row">
-            <textarea
-              ref="roomMessageInput"
-              v-model="roomMessageText"
-              placeholder="Scrie în cameră..."
-              @keydown.enter.exact.prevent="sendRoomMessage"
-              rows="2"
-            ></textarea>
-            <button class="btn-send" @click="sendRoomMessage" :disabled="!roomMessageText.trim()">
-              Trimite
-            </button>
-          </div>
+      <div v-else class="welcome-screen">
+        <div class="welcome-logo">Y!</div>
+        <h2>Yahoo! Messenger</h2>
+        <p>Conectează-te cu prietenii tăi</p>
+        <div class="welcome-tips">
+          <div class="tip">💬 Click pe un contact pentru a chata</div>
+          <div class="tip">➕ Adaugă prieteni noi cu butonul plus</div>
+          <div class="tip">📨 Tab-ul <strong>Cereri</strong> pentru invitații noi</div>
+          <div class="tip">🎭 Click pe avatarul tău pentru a edita profilul</div>
         </div>
       </div>
     </main>
 
-    <!-- ═══════════ PROFILE MODAL ═══════════ -->
-    <div class="modal-overlay" v-if="showProfileModal" @click.self="showProfileModal = false">
-      <div class="modal">
-        <div class="modal-header">
-          <h3>✏️ Editează profilul</h3>
-          <button @click="showProfileModal = false">✕</button>
-        </div>
-        <div class="modal-body">
-          <div class="avatar-selector">
-            <label>Avatar</label>
-            <div class="avatar-grid">
-              <div
-                v-for="av in avatarOptions"
-                :key="av.key"
-                :class="['avatar-option', { selected: editProfile.avatar === av.key }]"
-                @click="editProfile.avatar = av.key"
-              >{{ av.emoji }}</div>
-            </div>
-          </div>
-          <div class="field">
-            <label>Nume afișat</label>
-            <input type="text" v-model="editProfile.displayName">
-          </div>
-          <div class="field">
-            <label>Mesaj status</label>
-            <input type="text" v-model="editProfile.statusMessage" placeholder="Ce mai faci?">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-secondary" @click="showProfileModal = false">Anulează</button>
-          <button class="btn-primary-small" @click="saveProfile">Salvează</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Context menu for contacts -->
-    <div class="context-menu" v-if="contextMenu.visible"
-      :style="{ top: contextMenu.y + 'px', left: contextMenu.x + 'px' }"
-      @mouseleave="contextMenu.visible = false">
-      <div class="ctx-item" @click="openChat(contextMenu.contact); contextMenu.visible = false">
-        💬 Deschide chat
-      </div>
-      <div class="ctx-item ctx-danger" @click="removeContact(contextMenu.contact)">
-        🗑️ Șterge contact
-      </div>
-    </div>
-
-    <!-- Toast notification -->
-    <div class="toast" v-if="toast.visible" :class="toast.type">
-      {{ toast.message }}
-    </div>
-
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
   <script src="js/chat.js"></script>
 </body>
+
 </html>
