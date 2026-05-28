@@ -43,10 +43,10 @@
       "password": "$2a$10$ePfP.0SQHKbPAxXHGhY6ou15Djxgc87d1ob.tvjy7ZO7/UaaDNDa.",
       "display_name": "Marian",
       "avatar": "default",
-      "status": "online",
+      "status": "offline",
       "status_message": "Hello!",
       "created_at": "2026-05-27T15:48:20.418Z",
-      "current_session_ip": "127.0.0.1"
+      "current_session_ip": null
     },
     {
       "id": 5,
