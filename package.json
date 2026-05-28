@@ -5,18 +5,23 @@
   "main": "Server/server.js",
   "scripts": {
     "start": "node Server/server.js",
-    "dev": "nodemon Server/server.js"
+    "dev": "nodemon Server/server.js",
+    "test": "mocha test/**/*.js --exit"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "socket.io": "^4.7.2",
-    "sql.js": "^1.10.0",
     "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
     "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.7.2",
+    "sql.js": "^1.10.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "chai": "^6.2.2",
+    "mocha": "^11.7.6",
+    "nodemon": "^3.0.2",
+    "socket.io-client": "^4.8.3",
+    "supertest": "^7.2.2"
   }
 }
