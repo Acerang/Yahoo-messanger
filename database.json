@@ -9,7 +9,8 @@
       "avatar": "cool",
       "status": "online",
       "status_message": "Hello!",
-      "created_at": "2026-05-09T16:07:08.429Z"
+      "created_at": "2026-05-09T16:07:08.429Z",
+      "current_session_ip": null
     },
     {
       "id": 2,
@@ -20,7 +21,44 @@
       "avatar": "cat",
       "status": "offline",
       "status_message": "Hello!",
-      "created_at": "2026-05-09T16:08:12.463Z"
+      "created_at": "2026-05-09T16:08:12.463Z",
+      "current_session_ip": null
+    },
+    {
+      "id": 3,
+      "username": "abracadabra",
+      "email": "exact@gmail.com",
+      "password": "$2a$10$xVeUKUnsb3ZHezwvRxcDfuprDdZdH5mXWxhCQhKscV.CUiQX8iUCi",
+      "display_name": "Cineva",
+      "avatar": "default",
+      "status": "online",
+      "status_message": "Hello!",
+      "created_at": "2026-05-21T13:57:27.524Z",
+      "current_session_ip": null
+    },
+    {
+      "id": 4,
+      "username": "marian",
+      "email": "marian@gmail.com",
+      "password": "$2a$10$ePfP.0SQHKbPAxXHGhY6ou15Djxgc87d1ob.tvjy7ZO7/UaaDNDa.",
+      "display_name": "Marian",
+      "avatar": "default",
+      "status": "offline",
+      "status_message": "Hello!",
+      "created_at": "2026-05-27T15:48:20.418Z",
+      "current_session_ip": null
+    },
+    {
+      "id": 5,
+      "username": "andrei",
+      "email": "andrei@gmail.com",
+      "password": "$2a$10$d3xZIPLW2f2KP0i9rPkNX.zZcnL/tR8IpgaspMfm3jEunkmiHnAde",
+      "display_name": "andrei",
+      "avatar": "default",
+      "status": "offline",
+      "status_message": "Hello!",
+      "created_at": "2026-05-27T15:58:11.091Z",
+      "current_session_ip": null
     }
   ],
   "contacts": [
@@ -32,6 +70,21 @@
     {
       "user_id": 2,
       "contact_id": 1,
+      "status": "accepted"
+    },
+    {
+      "user_id": 3,
+      "contact_id": 2,
+      "status": "pending"
+    },
+    {
+      "user_id": 5,
+      "contact_id": 4,
+      "status": "accepted"
+    },
+    {
+      "user_id": 4,
+      "contact_id": 5,
       "status": "accepted"
     }
   ],
@@ -105,6 +158,20 @@
       "receiver_id": 2,
       "content": "ceva",
       "created_at": "2026-05-09T16:48:03.399Z"
+    },
+    {
+      "id": 1779897526529,
+      "sender_id": 4,
+      "receiver_id": 5,
+      "content": "😎asdasd",
+      "created_at": "2026-05-27T15:58:46.529Z"
+    },
+    {
+      "id": 1779897536528,
+      "sender_id": 5,
+      "receiver_id": 4,
+      "content": "asdawd😭",
+      "created_at": "2026-05-27T15:58:56.528Z"
     }
   ],
   "chat_rooms": [

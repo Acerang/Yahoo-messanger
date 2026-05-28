@@ -77,6 +77,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     if (user) {
       user.status = 'offline';
+      user.current_session_ip = null;
       db.save();
       io.emit('status_change', { userId, status: 'offline' });
     }

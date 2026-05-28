@@ -29,7 +29,7 @@ module.exports = {
       },
       run: (...p) => {
         if (s.includes('insert into users')) {
-          const n = { id: data.users.length + 1, username: p[0], email: p[1], password: p[2], display_name: p[3], avatar: 'default', status: 'online', status_message: 'Hello!', created_at: new Date().toISOString() };
+          const n = { id: data.users.length + 1, username: p[0], email: p[1], password: p[2], display_name: p[3], avatar: 'default', status: 'online', status_message: 'Hello!', created_at: new Date().toISOString(), current_session_ip: null };
           data.users.push(n);
         } else if (s.includes('update users set status =')) {
           const u = data.users.find(x => x.id === p[p.length - 1]);

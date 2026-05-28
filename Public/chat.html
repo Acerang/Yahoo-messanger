@@ -546,7 +546,9 @@
     }
 
     .chat-header-user {
-      display: flex;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
       align-items: center;
       gap: 10px;
     }
@@ -1039,8 +1041,8 @@
             </div>
           </div>
           <div class="field">
-            <label>Status</label>
-            <select v-model="editStatus">
+            <label for="edit-status">Status</label>
+            <select id="edit-status" v-model="editStatus">
               <option value="online">🟢 Online</option>
               <option value="away">🟡 Plecat</option>
               <option value="busy">🔴 Ocupat</option>
@@ -1209,7 +1211,9 @@
           <div class="input-row">
             <textarea ref="textarea" v-model="messageText" @keydown.enter.exact.prevent="sendMessage"
               @keydown.shift.enter.exact="messageText += '\n'"
-              :placeholder="'Scrie un mesaj lui ' + activeChat.display_name + '...'" rows="2"></textarea>
+              :placeholder="'Scrie un mesaj lui ' + activeChat.display_name + '...'"
+              :title="'Scrie un mesaj lui ' + activeChat.display_name + '...'"
+              rows="2"></textarea>
             <button class="btn-send" @click="sendMessage" :disabled="!messageText.trim()">
               Trimite ►
             </button>
